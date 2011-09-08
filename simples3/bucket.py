@@ -13,14 +13,12 @@ from contextlib import contextmanager
 from urllib import quote_plus
 from base64 import b64encode
 
-from django.conf import settings
 
 from .utils import (_amz_canonicalize, metadata_headers, rfc822_fmt,
                     _iso8601_dt, aws_md5, aws_urlquote, guess_mimetype,
                     info_dict, expire2datetime)
 
-amazon_s3_domain = getattr(settings, 'AWS_HOST', 'www.amazonaws.com')
-amazon_s3_ns_url = "http://%s/doc/2006-03-01/" % amazon_s3_domain
+amazon_s3_ns_url = "http://s3.amazonaws.com/doc/2006-03-01/"
 
 class S3Error(Exception):
     fp = None
@@ -133,7 +131,8 @@ class S3Bucket(object):
     default_encoding = "utf-8"
 
     def __init__(self, name, access_key=None, secret_key=None,
-                 base_url=None, timeout=None, secure=False):
+                 base_url=None, timeout=None, secure=False,
+                 amazon_s3_domain='s3.amazonaws.com'):
         scheme = ("http", "https")[int(bool(secure))]
         if not base_url:
             base_url = "%s://%s/%s" % (scheme, amazon_s3_domain, aws_urlquote(name))
